@@ -10,11 +10,11 @@ jQuery ->
         reels.push new_reel
       return reels
       
-    # Draw first 3 elements of arrays
-    draw = (o) ->
+    # Draw only visible elements of arrays
+    draw = (object, lines) ->
       $('#'+id).find('.sm').empty()
-      for reel in o
-        reel = reel[0..2]
+      for reel in object
+        reel = reel[0..lines-1]
         $('#'+id).find('.sm').append($('<div class="reel">'))
         for icon in reel
           $('#'+id).find('.sm').find('div:last').append($('<img src="/assets/icons/'+icon.image+'">'))
@@ -23,14 +23,14 @@ jQuery ->
     $('#'+id).find('.pull').on 'click', (e) ->
       $.getJSON "/machines/press_button/"+name, (sm) ->
         result = convertJsonToArray(sm.result)
-        draw(result)
+        draw(result, sm.lines_quantity)
         $('#'+id).find('.win').html(sm.win)
           
     # Get the structure of slot machine
     $.getJSON "/machines/load/"+name, (sm) ->
       $('#'+id).find('h2').html("("+sm.name+")")
       reels = convertJsonToArray(sm.reels)
-      draw(reels)
+      draw(reels, sm.lines_quantity)
       
   loadSlotMachine('big')
-  loadSlotMachine('simple')
+  loadSlotMachine('simple', 'simple')

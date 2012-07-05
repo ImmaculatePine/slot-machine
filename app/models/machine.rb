@@ -2,9 +2,7 @@ class Machine
   include ActiveModel::Conversion
   extend ActiveModel::Naming
   
-  LINES_QUANTITY = 3
-  
-  attr_accessor :name, :reels, :result, :win
+  attr_accessor :name, :reels, :result, :win, :lines_quantity
 
   def press_button
     self.result = []
@@ -13,7 +11,7 @@ class Machine
       shift = rand(0..reel.length-1)
       # Adding 3x5 array to result
       # 2 reels are concatenated becuase reel is a circle
-      self.result << (reel+reel)[shift..shift+LINES_QUANTITY-1]
+      self.result << (reel+reel)[shift..shift+self.lines_quantity-1]
     end
     
     check_combinations
@@ -21,10 +19,11 @@ class Machine
   end
   
   private
-    def initialize(name)
-      send("name=", name)
+    def initialize(name = nil)
+      self.name = name
 
       set_default_name
+      load_lines_quantity
       load_reels
     end
     
@@ -35,6 +34,10 @@ class Machine
     def set_default_name
       self.name ||= "default"
       self.name = "default" if SLOT_MACHINES[self.name].nil?
+    end
+    
+    def load_lines_quantity
+      self.lines_quantity = SLOT_MACHINES[self.name]['lines_quantity']
     end
   
     def load_reels
@@ -99,6 +102,7 @@ class Machine
     end
     
     def check_custom_combinations
+      return unless SLOT_MACHINES[self.name]['combinations']['custom'].present?
       combinations = SLOT_MACHINES[self.name]['combinations']['custom']
       combinations.each do |combination|
         if combination[1]['line'].present?
