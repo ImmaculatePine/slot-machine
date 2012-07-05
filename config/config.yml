@@ -1,0 +1,79 @@
+#
+# You can add custom slot machines by adding in slot_machines section:
+#  
+# name_of_your_slot_machine:
+#   icons:
+#     icon_name: image_path
+#     # image_path requests for image in /assets/icons/
+#   reels:
+#     # List of reels
+#     1:
+#       # List of images on the reel
+#       1: icon_name
+#       2: icon_name
+#     2: 
+#       1: icon_name
+#       2: icon_name
+#
+# If you don't specify any slot machines
+# the default slot machine will be loaded.
+#
+slot_machines:
+  default:
+    icons:
+      bulb: bulb.png
+      exclamation: exclamation.png
+      gamepad: gamepad.png
+      gear: gear.png
+      gnome: gnome.png
+      ipod: ipod.png
+      money: money.png
+      ok: ok.png
+      readonly: readonly.png
+      science: science.png
+      ubuntu: ubuntu.png
+      web: web.png
+      wrench: wrench.png
+    reels:
+      1:
+        1: bulb
+        2: exclamation
+        3: gamepad
+        4: gear
+        5: gnome
+        6: ipod
+        7: money
+        8: ok
+        9: readonly
+        10: science
+        11: ubuntu
+        12: web
+        13: wrench
+      2:
+        1: bulb
+        2: gnome
+        3: exclamation
+        4: gear
+        5: ipod
+        6: money
+        7: gamepad
+        8: ok
+        9: science
+        10: readonly
+        11: web
+        12: wrench
+        13: ubuntu
+      3:
+        1: web
+        2: exclamation
+        3: gnome
+        4: ipod
+        5: gear
+        6: ok
+        7: bulb
+        8: readonly
+        9: money
+        10: gamepad
+        11: science
+        12: ubuntu
+        13: wrench
