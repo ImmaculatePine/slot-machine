@@ -21,10 +21,8 @@ class Machine
   end
   
   private
-    def initialize(attributes = {})
-      attributes.each do |name, value|
-        send("#{name}=", value)
-      end
+    def initialize(name)
+      send("name=", name)
 
       set_default_name
       load_reels
@@ -36,6 +34,7 @@ class Machine
 
     def set_default_name
       self.name ||= "default"
+      self.name = "default" if SLOT_MACHINES[self.name].nil?
     end
   
     def load_reels

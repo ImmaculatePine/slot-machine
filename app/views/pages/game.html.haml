@@ -1,10 +1,17 @@
 %h1 Slot machines
-%h2 (name)
 
-#sm
-
-.win
-  win: 
-  %span#win 0
-
-%input#pull{type: "button", value: "Pull the plug!"}
+#big
+  %h2 (name)
+  .sm
+  %div
+    win: 
+    %span.win 0
+  %input.pull{type: "button", value: "Pull the plug!"}
+  
+#simple
+  %h2 (name)
+  .sm
+  %div
+    win: 
+    %span.win 0
+  %input.pull{type: "button", value: "Pull the plug!"}  

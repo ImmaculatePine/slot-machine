@@ -1,7 +1,7 @@
 SlotMachine::Application.routes.draw do
   
-  get "machines/load" => "machines#load"
-  get "machines/press_button" => "machines#press_button"
+  get "machines/load/(:name)" => "machines#load"
+  get "machines/press_button/(:name)" => "machines#press_button"
 
   root to: "pages#game"
   
