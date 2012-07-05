@@ -1,6 +1,7 @@
 SlotMachine::Application.routes.draw do
   
   get "machines/load" => "machines#load"
+  get "machines/press_button" => "machines#press_button"
   
   # The priority is based upon order of creation:
   # first created -> highest priority.
