@@ -118,12 +118,6 @@ slot_machines:
         in_line_3:
           sum: 50
           enabled: true
-        slash:
-          sum: 30
-          enabled: true
-        backslash:
-          sum: 30
-          enabled: true
       # You can add your own combinations using syntax described below.
       custom:
         its_ok:
@@ -134,6 +128,3 @@ slot_machines:
             3: ok
             4: ok
             5: ok
-        
-        
-      

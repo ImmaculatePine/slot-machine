@@ -17,6 +17,7 @@ class Machine
     end
     
     check_combinations
+    check_custom_combinations
   end
   
   private
@@ -90,11 +91,26 @@ class Machine
           for z in j..j+x-1
             win = false if last_icon != self.result[z][i][:name]
           end
-          return true if win == true
+          return true if win
         end
-        return true if win == true
+        return true if win
       end
       
       return false
+    end
+    
+    def check_custom_combinations
+      combinations = SLOT_MACHINES[self.name]['combinations']['custom']
+      combinations.each do |combination|
+        if combination[1]['line'].present?
+          for i in 0..self.result[0].length-1
+            win = true
+            combination[1]['line'].each do |line|
+              win = false if self.result[line[0].to_i-1][i][:name] != line[1]
+            end
+            self.win += combination[1]['sum'] if win
+          end
+        end
+      end
     end
 end
