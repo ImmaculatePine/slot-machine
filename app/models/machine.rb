@@ -9,7 +9,6 @@ class Machine
     self.reels.each do |reel|
       # Generate random shift to move every reel
       shift = rand(0..reel.length-1)
-      # Adding 3x5 array to result
       # 2 reels are concatenated becuase reel is a circle
       self.result << (reel+reel)[shift..shift+self.lines_quantity-1]
     end
