@@ -12,7 +12,7 @@ jQuery ->
   draw = (o) ->
     $('#sm').empty()
     for reel in o
-      reel = reel[1..3]
+      reel = reel[0..2]
       $('#sm').append($('<div class="reel">'))
       for icon in reel
         $('#sm').find('div:last').append($('<img src="/assets/icons/'+icon.image+'">'))
@@ -20,8 +20,9 @@ jQuery ->
   # Add click handler on button
   $('#pull').on 'click', (e) ->
     $.getJSON "/machines/press_button.json", (sm) ->
-      result = convertJsonToArray(sm.result)    
+      result = convertJsonToArray(sm.result)
       draw(result)
+      $('#win').html(sm.win)
         
   # Get the structure of slot machine
   $.getJSON "/machines/load.json", (sm) ->

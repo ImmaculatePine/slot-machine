@@ -77,3 +77,63 @@ slot_machines:
         11: science
         12: ubuntu
         13: wrench
+      4:
+        1: ubuntu
+        2: web       
+        3: gnome
+        4: exclamation
+        5: ipod
+        6: ok
+        7: bulb
+        8: readonly
+        9: wrench
+        10: gamepad
+        11: money
+        12: science
+        13: gear
+      5:
+        1: bulb
+        2: exclamation
+        3: gamepad
+        4: gear
+        5: gnome
+        6: ipod
+        7: money
+        8: ok
+        9: readonly
+        10: science
+        11: ubuntu
+        12: web
+        13: wrench
+    combinations:
+      # There are some default combinations such as full line of the same icons implemented in the model.
+      # If you don't want to use them set enabled: false
+      default:
+        full_line: 
+          sum: 100
+          enabled: true
+        in_line_4:
+          sum: 70
+          enabled: true
+        in_line_3:
+          sum: 50
+          enabled: true
+        slash:
+          sum: 30
+          enabled: true
+        backslash:
+          sum: 30
+          enabled: true
+      # You can add your own combinations using syntax described below.
+      custom:
+        its_ok:
+          sum: 200
+          line:
+            1: ok
+            2: ok
+            3: ok
+            4: ok
+            5: ok
+        
+        
+      
