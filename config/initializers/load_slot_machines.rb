@@ -1,0 +1,1 @@
+SLOT_MACHINES = YAML.load_file("#{Rails.root}/config/config.yml")['slot_machines']
