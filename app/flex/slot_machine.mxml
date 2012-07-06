@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+  xmlns:mx="http://www.adobe.com/2006/mxml"
+  xmlns:slot="com.slot_machine.components.*"
+  layout="vertical"
+  horizontalAlign="center"
+  verticalAlign="top"
+  width="100%"
+  height="100%">
+
+  <mx:ViewStack id="mainStack" width="100%" height="100%">
+    <slot:SlotMachine id="SlotMachine1"/>
+  </mx:ViewStack>
+</mx:Application>
