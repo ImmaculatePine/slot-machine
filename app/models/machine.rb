@@ -1,6 +1,8 @@
 class Machine
   include ActiveModel::Conversion
+  include ActiveModel::Serialization
   extend ActiveModel::Naming
+  
   
   attr_accessor :name, :reels, :result, :win, :lines_quantity
 
@@ -16,6 +18,21 @@ class Machine
     check_combinations
     check_custom_combinations
   end
+  
+  def reels_to_hash
+    self.reels
+  end
+  
+  def to_hash
+    {
+      name: self.name, 
+      reels: self.reels,
+      result: self.result,
+      win: self.win,
+      lines_quantity: self.lines_quantity
+    }
+  end
+  
   
   private
     def initialize(name = nil)
