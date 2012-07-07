@@ -3,8 +3,7 @@
   xmlns:fx="http://ns.adobe.com/mxml/2009"
   xmlns:s="library://ns.adobe.com/flex/spark"
   xmlns:mx="library://ns.adobe.com/flex/mx"
-  width="100%"
-  height="100%">
+  width="100%">
   <fx:Script>
     <![CDATA[
       import spark.components.Image;
@@ -13,42 +12,44 @@
       import mx.rpc.http.HTTPService; 
       import mx.rpc.events.ResultEvent; 
       import mx.rpc.events.FaultEvent; 
-            
+      
+      public var _name:String = "default";
+      
       private var service:HTTPService 
       private var lines_quantity:uint;
 
-      public function useHttpService():void { 
+      
+      
+      private function useHttpService(
+        url:String,
+        httpResult:Function, 
+        params:String = null
+      ):void 
+      { 
         service = new HTTPService(); 
-        service.url = "/machines/load"; 
+        service.url = url; 
         service.method = "GET"; 
         service.addEventListener("result", httpResult); 
         service.addEventListener("fault", httpFault); 
         service.send(); 
       } 
  
-      public function httpResult(event:ResultEvent):void {
-        var rawData:String = String(event.result);
-        var result:Object = JSON.parse(rawData);
-        
-        lines_quantity = result.lines_quantity;
-        draw(result.reels);
-      }
-      
-      public function httpFault(event:FaultEvent):void { 
+      private function httpFault(event:FaultEvent):void { 
         var faultstring:String = event.fault.faultString; 
         Alert.show(faultstring); 
       }
       
-      public function draw(reels:Array):void {
+      private function draw(reels:Array):void {
         const ICONS_PATH:String = "/assets/icons/";
         var newImage:Image;
         var newVGroup:VGroup;
         var i:uint;
         var j:uint;
         
+        machine.removeAllElements();
+        
         for (i=0; i < reels.length; i++) {
           newVGroup = new VGroup();
-          newVGroup.left = 128*i;
           machine.addElement(newVGroup);
           for (j=0; j < lines_quantity; j++) {
             newImage = new Image();
@@ -57,13 +58,30 @@
           }
         }
       }
-    
-      public function loadMachine():void {
-        useHttpService();
+      
+      private function loadMachine(event:ResultEvent):void {
+        var rawData:String = String(event.result);
+        var result:Object = JSON.parse(rawData);
+        
+        lines_quantity = result.lines_quantity;
+        draw(result.reels);
+      }
+      
+      private function spine(event:ResultEvent):void {
+        var rawData:String = String(event.result);
+        var result:Object = JSON.parse(rawData);
+        
+        draw(result.result);
+        win.text = result.win;
       }
     ]]>
   </fx:Script>
 
-  <s:Group id="machine" height="100%" width="100%" initialize="loadMachine();"/>
+  <s:HGroup id="machine" width="100%" initialize="useHttpService('/machines/load/'+_name, loadMachine);"/>
+  <s:HGroup>
+    <s:Label text="Win:"/>
+    <s:Label id="win" text="0"/>    
+  </s:HGroup>
+  <s:Button label="Pull the plug!" click="useHttpService('/machines/press_button/'+_name, spine)"/>
   
 </s:VGroup>
