@@ -7,6 +7,6 @@ class MachinesController < ApplicationController
   def press_button
     @machine = Machine.new(params[:name])
     @machine.press_button
-    render json: @machine.to_hash.slice(:result, :win)
+    render json: @machine.to_hash.slice(:shifts, :win)
   end
 end

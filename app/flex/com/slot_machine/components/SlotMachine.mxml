@@ -14,11 +14,11 @@
       import mx.rpc.events.FaultEvent; 
       
       public var _name:String = "default";
+      private var _lines_quantity:uint;
+      private var _reels:Array;
+      private var _shifts:Array;
       
       private var service:HTTPService 
-      private var lines_quantity:uint;
-
-      
       
       private function useHttpService(
         url:String,
@@ -39,21 +39,34 @@
         Alert.show(faultstring); 
       }
       
-      private function draw(reels:Array):void {
+      private function draw():void {
         const ICONS_PATH:String = "/assets/icons/";
         var newImage:Image;
         var newVGroup:VGroup;
         var i:uint;
         var j:uint;
+        var jmin:uint;
+        var jmax:uint;
+        // little hack cause shift can be 12 for 13 icons in reel
+        var modified_j:uint;
         
         machine.removeAllElements();
         
-        for (i=0; i < reels.length; i++) {
+        for (i=0; i < _reels.length; i++) {
           newVGroup = new VGroup();
           machine.addElement(newVGroup);
-          for (j=0; j < lines_quantity; j++) {
+          
+          jmin = _shifts[i];
+          jmax = jmin + _lines_quantity;
+          
+          for (j = jmin; j < jmax; j++) {
             newImage = new Image();
-            newImage.source = ICONS_PATH + reels[i][j].image;
+            if (j >= _reels[i].length) {
+              modified_j = j - _reels[i].length;
+              }
+            else
+              modified_j = j;
+            newImage.source = ICONS_PATH + _reels[i][modified_j].image;
             newVGroup.addElement(newImage);
           }
         }
@@ -63,16 +76,27 @@
         var rawData:String = String(event.result);
         var result:Object = JSON.parse(rawData);
         
-        lines_quantity = result.lines_quantity;
-        draw(result.reels);
+        _lines_quantity = result.lines_quantity;
+        _reels = result.reels;
+
+        var i:uint;
+        _shifts = [];
+        for (i = 0; i < _reels.length; i++) {
+          _shifts[i] = 0;
+        }
+        
+        draw();
       }
       
       private function spine(event:ResultEvent):void {
         var rawData:String = String(event.result);
         var result:Object = JSON.parse(rawData);
         
-        draw(result.result);
+        _shifts = result.shifts;
+        
         win.text = result.win;
+        
+        draw();
       }
     ]]>
   </fx:Script>

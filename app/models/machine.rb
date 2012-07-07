@@ -3,14 +3,15 @@ class Machine
   include ActiveModel::Serialization
   extend ActiveModel::Naming
   
-  
-  attr_accessor :name, :reels, :result, :win, :lines_quantity
+  attr_accessor :name, :reels, :result, :win, :lines_quantity, :shifts
 
   def press_button
     self.result = []
+    self.shifts = []
     self.reels.each do |reel|
       # Generate random shift to move every reel
       shift = rand(0..reel.length-1)
+      self.shifts << shift
       # 2 reels are concatenated becuase reel is a circle
       self.result << (reel+reel)[shift..shift+self.lines_quantity-1]
     end
@@ -19,17 +20,14 @@ class Machine
     check_custom_combinations
   end
   
-  def reels_to_hash
-    self.reels
-  end
-  
   def to_hash
     {
       name: self.name, 
       reels: self.reels,
       result: self.result,
       win: self.win,
-      lines_quantity: self.lines_quantity
+      lines_quantity: self.lines_quantity,
+      shifts: self.shifts
     }
   end
   
