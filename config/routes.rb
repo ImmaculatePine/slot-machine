@@ -4,7 +4,6 @@ SlotMachine::Application.routes.draw do
   get "machines/press_button/(:name)" => "machines#press_button"
   
   get "flash" => "pages#flash"
-  get "html" => "pages#game"  
   
   root to: "pages#flash"
   
