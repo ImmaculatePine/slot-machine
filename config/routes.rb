@@ -4,8 +4,9 @@ SlotMachine::Application.routes.draw do
   get "machines/press_button/(:name)" => "machines#press_button"
   
   get "flash" => "pages#flash"
+  get "html" => "pages#game"  
   
-  root to: "pages#game"
+  root to: "pages#flash"
   
   # The priority is based upon order of creation:
   # first created -> highest priority.
