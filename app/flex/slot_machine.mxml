@@ -11,4 +11,5 @@
     <slot:SlotMachine id="SlotMachineFull"/>
     <slot:SlotMachine id="SlotMachineSimple" _name="simple"/>
   </s:VGroup>
+  
 </s:Application>

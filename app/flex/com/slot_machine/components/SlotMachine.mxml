@@ -7,16 +7,20 @@
   <fx:Script>
     <![CDATA[
       import spark.components.Image;
-      import spark.components.VGroup;      
+      import spark.components.Group;
       import mx.controls.Alert; 
       import mx.rpc.http.HTTPService; 
       import mx.rpc.events.ResultEvent; 
       import mx.rpc.events.FaultEvent; 
+      import flash.utils.Timer;
+      import flash.events.TimerEvent;
       
       public var _name:String = "default";
       private var _lines_quantity:uint;
       private var _reels:Array;
-      private var _shifts:Array;
+      private var _shifts:Array = [];
+      private var _timers:Array = [];
+      private var _win:String;
       
       private var service:HTTPService 
       
@@ -39,64 +43,131 @@
         Alert.show(faultstring); 
       }
       
-      private function draw():void {
-        const ICONS_PATH:String = "/assets/icons/";
-        var newImage:Image;
-        var newVGroup:VGroup;
-        var i:uint;
-        var j:uint;
-        var jmin:uint;
-        var jmax:uint;
-        // little hack cause shift can be 12 for 13 icons in reel
-        var modified_j:uint;
-        
-        machine.removeAllElements();
-        
-        for (i=0; i < _reels.length; i++) {
-          newVGroup = new VGroup();
-          machine.addElement(newVGroup);
-          
-          jmin = _shifts[i];
-          jmax = jmin + _lines_quantity;
-          
-          for (j = jmin; j < jmax; j++) {
-            newImage = new Image();
-            if (j >= _reels[i].length) {
-              modified_j = j - _reels[i].length;
-              }
-            else
-              modified_j = j;
-            newImage.source = ICONS_PATH + _reels[i][modified_j].image;
-            newVGroup.addElement(newImage);
-          }
-        }
-      }
-      
       private function loadMachine(event:ResultEvent):void {
+        const ICONS_PATH:String = "/assets/icons/";
         var rawData:String = String(event.result);
         var result:Object = JSON.parse(rawData);
+        var newImage:Image;
+        var newGroup:Group;
+        var i:uint;
+        var j:uint;
+        var timer:Timer;
         
+        // Get reels and count of visible lines from JSON
         _lines_quantity = result.lines_quantity;
         _reels = result.reels;
-
-        var i:uint;
-        _shifts = [];
+        
+        // Initialize shifts array
+        // At first moment reels aren't moved.
         for (i = 0; i < _reels.length; i++) {
           _shifts[i] = 0;
         }
         
-        draw();
+        // Create reels
+        for (i=0; i < _reels.length; i++) {
+          newGroup = new Group();
+          newGroup.clipAndEnableScrolling = true;
+          newGroup.height = 128 * _lines_quantity;
+          machine.height = newGroup.height;
+          machine.addElement(newGroup);
+          
+          for (j = 0; j < _reels[i].length; j++) {
+            newImage = new Image();
+            
+            // Move invisible (out of bounds) icons at the top
+            // to imitate circle
+            if (j < _lines_quantity)
+              newImage.top = 128 * j;
+            else
+              newImage.top = 128 * (j - _reels[i].length);
+              
+            newImage.source = ICONS_PATH + _reels[i][j].image;
+            newGroup.addElement(newImage);
+          }
+          
+          // Create separate timer for every reel
+          timer = new Timer(1);
+          timer.addEventListener(TimerEvent.TIMER, animate)
+          _timers[i] = timer;
+        }
       }
       
       private function spine(event:ResultEvent):void {
         var rawData:String = String(event.result);
         var result:Object = JSON.parse(rawData);
         
+        // Get shifts of every reel
         _shifts = result.shifts;
         
-        win.text = result.win;
+        // Get sum of win
+        _win = result.win;
         
-        draw();
+        // Hide previous result and disable spine button
+        win.text = "..."
+        spineButton.enabled = false;
+
+        // Start every timer
+        var i:uint;        
+        for (i = 0; i < _reels.length; i++) {
+          _timers[i].start();
+        }
+      }
+      
+      private function animate(event:TimerEvent):void {
+        var group:Group;
+        var image:Image;
+        var i:uint;
+        var images_count:uint;        
+        var timer:Timer;
+        var timerId:uint;
+        
+        timer = event.target as Timer;
+        
+        // Get the id of timer to operate with its reel
+        for (i = 0; i < _reels.length; i++) {
+          if (timer == _timers[i]) {
+            timerId = i;
+            break;
+          }
+        }
+        
+        // Move every reel down
+        group = machine.getElementAt(timerId) as Group;
+        images_count = group.numElements; 
+        for (i=0; i < images_count; i++) {
+          image = group.getElementAt(i) as Image;
+          
+          // If icon moves out of bounds we should move it upwards
+          if (image.top == 128*_lines_quantity) image.top = -(images_count-_lines_quantity) * 128;
+
+          image.top += 32;
+        }
+        
+        // Slow down timer after 5 seconds of rolling
+        if (timer.currentCount > 5000) timer.delay += 1;
+        
+        // Stop timer with 30% probability
+        // if the reel is in correct position
+        image = group.getElementAt(_shifts[timerId]) as Image;
+        if (image.top == 0) {
+          if (Math.floor(Math.random() * 10) <= 3)
+            timer.stop();
+        }
+        
+        // Detect if all timers stopped
+        var done:Boolean = true;
+        for (i = 0; i < _timers.length; i++) {
+          if (_timers[i].running) {
+            done = false;
+            break;
+          }
+        }
+        
+        // Show result and enable the button to roll again
+        if (done) {
+          spineButton.enabled = true;
+          win.text = _win;
+        }
       }
     ]]>
   </fx:Script>
@@ -106,6 +177,5 @@
     <s:Label text="Win:"/>
     <s:Label id="win" text="0"/>    
   </s:HGroup>
-  <s:Button label="Pull the plug!" click="useHttpService('/machines/press_button/'+_name, spine)"/>
-  
+  <s:Button id="spineButton" label="Pull the plug!" click="useHttpService('/machines/press_button/'+_name, spine)"/>
 </s:VGroup>
